@@ -436,7 +436,96 @@ class HashTable {
         console.log(this.rawArray)
     }
 }
+//
+class Graph {
+    static Node = class {
+        constructor(data) {
+            this.data = data
+            this.connections = []
+            this.heuristic = 0
+        } 
+    }
+    static connect(node1, node2, cost) {
+        node1.connections.push({Node: node2, Cost: cost})
+        node2.connections.push({Node: node1, Cost: cost})
+    }
+    static isVisited(Visited, node) {
+        for (let visited of Visited) {
+            if (visited.Node === node) return true
+        }
+        return false
+    }
+    static Dijkstra(start) {
+        let current = start
+        const Visited = [{Node: current, Distance: 0, From: null}]
 
+        let minimumDistance 
+        let minimumFrom
+        let minimumNode
+        while (minimumDistance !== Infinity) {
+            minimumDistance = Infinity
+            for (let visited of Visited) {
+                for (let connection of visited.Node.connections) {
+                    if (!Graph.isVisited(Visited, connection.Node)) {
+                        if (connection.Cost + visited.Distance < minimumDistance) {
+                            minimumDistance = connection.Cost + visited.Distance
+                            minimumFrom = visited.Node
+                            minimumNode = connection.Node
+                        }
+                    }
+                }
+            }
+            Visited.push({Node: minimumNode, Distance: minimumDistance, From: minimumFrom})
+        }
+        Visited.splice(-1, 1)
+        return Visited
+    }
+    static A_Star(start, end) {
+        /* Here */
+        function findPath(Visited, node, path = []) {
+            for (let visited of Visited) {
+                const Node = visited.Node
+                if (Node === node) {
+                    path.push(Node)
+                    findPath(Visited, visited.From, path)
+                }
+            }
+            return path
+        }
+        /* To Here */
+        let current = start
+        const Visited = [{Node: current, Distance: 0, From: null}]
+
+        let minimumDistance 
+        let minimumFrom
+        let minimumNode
+        while (minimumDistance !== Infinity) {
+            minimumDistance = Infinity
+            for (let visited of Visited) {
+                for (let connection of visited.Node.connections) {
+                    if (!Graph.isVisited(Visited, connection.Node)) {
+                        if (connection.Cost + visited.Distance + /* Here */ connection.Node.heuristic /* To Here */< minimumDistance) {
+                            minimumDistance = connection.Cost + visited.Distance
+                            minimumFrom = visited.Node
+                            minimumNode = connection.Node
+                        }
+                    }
+                }
+            }                
+            Visited.push({Node: minimumNode, Distance: minimumDistance, From: minimumFrom})
+            /* Here */
+            if (minimumNode === end) return [findPath(Visited, minimumNode), minimumDistance]
+            /* To Here */
+        }
+        console.error("No End Node Found In Graph!")
+    }
+}
+
+
+const Dijkstra = prepareGraph()[0]
+console.log(Graph.Dijkstra(Dijkstra))
+const A_Star = prepareGraph()
+formatGraphPath(Graph.A_Star(...A_Star))
 
 // NOT IN SPEC
 
@@ -486,4 +575,46 @@ function reverse(array) {
 function highestCommonFactor(x, y) {
     while(y) [x, y] = [y, x%y]
     return x
+}
+function formatGraphPath([path, distance]) {
+    let pathString = ""
+    for (let Node of path) {
+        pathString += Node.data + " < "
+    }
+    console.log("Path: ", pathString.slice(0, -3))
+    console.log("Total Distance:", distance)
+}
+// Testing
+function prepareGraph() {
+    const A = new Graph.Node("A")
+    const B = new Graph.Node("B")
+    const C = new Graph.Node("C")
+    const D = new Graph.Node("D")
+    const E = new Graph.Node("E")
+    const F = new Graph.Node("F")
+    const G = new Graph.Node("G")
+    const H = new Graph.Node("H")
+    const I = new Graph.Node("I")
+    const J = new Graph.Node("J")
+    const K = new Graph.Node("K")
+    const L = new Graph.Node("L")
+    Graph.connect(A, C, 6)
+    Graph.connect(A, F, 6)
+    Graph.connect(B, C, 3)
+    Graph.connect(B, D, 1)
+    Graph.connect(C, E, 1)
+    Graph.connect(D, G, 2)
+    Graph.connect(D, H, 5)
+    Graph.connect(D, I, 1)
+    Graph.connect(E, F, 1)
+    Graph.connect(E, G, 1)
+    Graph.connect(F, J, 1)
+    Graph.connect(F, G, 2)
+    Graph.connect(G, I, 1)
+    Graph.connect(H, I, 6)
+    Graph.connect(H, L, 6)
+    Graph.connect(I, K, 6)
+    Graph.connect(J, K, 4)
+    Graph.connect(K, L, 4)
+    return [A, L]    
 }
