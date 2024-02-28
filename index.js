@@ -1,3 +1,10 @@
+// Welcome, 
+// This contains all required algorithms for OCR spec as of February 2024
+// Made by Isaac Loffredo
+
+// Note:
+// "private" functions/variables in classes are camelCase
+
 // Searches
 
 // Iterates over an array from the start index to the last, returning the index when found
@@ -274,15 +281,15 @@ class BinaryTree {
         }
     }
     Delete(data) {
-        this.root = this.deleteNode(this.root, data)
+        this.root = this.DeleteNode(this.root, data)
     }
-    deleteNode(node, data) {
+    DeleteNode(node, data) {
         if (!node) return node
 
         if (data < node.data) {
-            node.left = this.deleteNode(node.left, data)
+            node.left = this.DeleteNode(node.left, data)
         } else if (data > node.data) {
-            node.right = this.deleteNode(node.right, data)
+            node.right = this.DeleteNode(node.right, data)
         } else {
             if (!node.left) {
                 return node.right
@@ -290,7 +297,7 @@ class BinaryTree {
                 return node.left
             }
             node.data = this.FindMinimumNode(node.right).data
-            node.right = this.deleteNode(node.right, node.data)
+            node.right = this.DeleteNode(node.right, node.data)
         }
         return node
     } 
@@ -400,7 +407,7 @@ class HashTable {
         this.rawArray = new Array(this.length)
     }
     weightInput(value) {
-        // Arbitrary Function
+        // Arbitrary Function, returns float
         return value.reduce((acc, [item, index]) => {
             const itemAscii = item.charCodeAt(0)
             const indexAscii = index.charCodeAt(0)
@@ -454,7 +461,7 @@ class Graph {
             this.heuristic = 0
         } 
     }
-    static connect(node1, node2, cost) {
+    static Connect(node1, node2, cost) {
         node1.connections.push({Node: node2, Cost: cost})
         node2.connections.push({Node: node1, Cost: cost})
     }
@@ -604,24 +611,24 @@ function prepareGraph() {
     const J = new Graph.Node("J")
     const K = new Graph.Node("K")
     const L = new Graph.Node("L")
-    Graph.connect(A, C, 6)
-    Graph.connect(A, F, 6)
-    Graph.connect(B, C, 3)
-    Graph.connect(B, D, 1)
-    Graph.connect(C, E, 1)
-    Graph.connect(D, G, 2)
-    Graph.connect(D, H, 5)
-    Graph.connect(D, I, 1)
-    Graph.connect(E, F, 1)
-    Graph.connect(E, G, 1)
-    Graph.connect(F, J, 1)
-    Graph.connect(F, G, 2)
-    Graph.connect(G, I, 1)
-    Graph.connect(H, I, 6)
-    Graph.connect(H, L, 6)
-    Graph.connect(I, K, 6)
-    Graph.connect(J, K, 4)
-    Graph.connect(K, L, 4)
+    Graph.Connect(A, C, 6)
+    Graph.Connect(A, F, 6)
+    Graph.Connect(B, C, 3)
+    Graph.Connect(B, D, 1)
+    Graph.Connect(C, E, 1)
+    Graph.Connect(D, G, 2)
+    Graph.Connect(D, H, 5)
+    Graph.Connect(D, I, 1)
+    Graph.Connect(E, F, 1)
+    Graph.Connect(E, G, 1)
+    Graph.Connect(F, J, 1)
+    Graph.Connect(F, G, 2)
+    Graph.Connect(G, I, 1)
+    Graph.Connect(H, I, 6)
+    Graph.Connect(H, L, 6)
+    Graph.Connect(I, K, 6)
+    Graph.Connect(J, K, 4)
+    Graph.Connect(K, L, 4)
     return {Start: A, End: L}    
 }
 function updateHeuristics(start, end) {
