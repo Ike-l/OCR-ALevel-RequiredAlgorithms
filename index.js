@@ -324,6 +324,15 @@ class BinaryTree {
         
         if (order === "post") console.log(node.data)
     }
+    InOrderTraversal(node=this.root) {
+        if (node.left) {
+            this.InOrderTraversal(node.left)
+        }
+        console.log(node.data)
+        if (node.right) {
+            this.InOrderTraversal(node.right)
+        }
+    }
 }
 // Each node contains data and a reference to the next node in an ordered (optional) sequence
 class LinkedList {
@@ -436,7 +445,7 @@ class HashTable {
         console.log(this.rawArray)
     }
 }
-//
+// Demonstrats Traversal Algorithms
 class Graph {
     static Node = class {
         constructor(data) {
@@ -522,11 +531,6 @@ class Graph {
 }
 
 
-const Dijkstra = prepareGraph()[0]
-console.log(Graph.Dijkstra(Dijkstra))
-const A_Star = prepareGraph()
-formatGraphPath(Graph.A_Star(...A_Star))
-
 // NOT IN SPEC
 
 // Performance
@@ -585,6 +589,8 @@ function formatGraphPath([path, distance]) {
     console.log("Total Distance:", distance)
 }
 // Testing
+
+// Class - Graph
 function prepareGraph() {
     const A = new Graph.Node("A")
     const B = new Graph.Node("B")
@@ -616,5 +622,26 @@ function prepareGraph() {
     Graph.connect(I, K, 6)
     Graph.connect(J, K, 4)
     Graph.connect(K, L, 4)
-    return [A, L]    
+    return {Start: A, End: L}    
+}
+function updateHeuristics(start, end) {
+    const graphCosts = Graph.Dijkstra(end)
+    for (let Cost of graphCosts) {
+        Cost.Node.heuristic = Math.max(0, Cost.Distance - Math.floor(Math.random()*Cost.Distance)) 
+        // apply offset (heuristic is admissible if it never overestimates so always subtract)
+        // use max because could change "*Cost.Distance" which could make it negative
+        console.log(Cost.Node.data, ":", Cost.Distance , ">", Cost.Node.heuristic)
+    }
+}
+function testGraph() {
+    console.log("-".repeat(10), "Dijkstra's", "-".repeat(10))
+    const Dijkstra = prepareGraph().Start
+    console.log(Graph.Dijkstra(Dijkstra))
+    console.log("-".repeat(10), "A*", "-".repeat(10))
+    const A_Star = prepareGraph()
+    updateHeuristics(A_Star.Start, A_Star.End)
+    formatGraphPath(Graph.A_Star(A_Star.Start, A_Star.End))
+    // expect Path : L < K < J < F < A
+    // expect Distance : 15
+    // expect Dijkstra to be consistent with A*
 }
