@@ -280,30 +280,109 @@ class BinaryTree {
             }
         }
     }
-    Delete(data) {
-        this.root = this.DeleteNode(this.root, data)
-    }
-    DeleteNode(node, data) {
-        if (!node) return node
-
-        if (data < node.data) {
-            node.left = this.DeleteNode(node.left, data)
-        } else if (data > node.data) {
-            node.right = this.DeleteNode(node.right, data)
-        } else {
-            if (!node.left) {
-                return node.right
-            } else if (!node.right) {
-                return node.left
-            }
-            node.data = this.FindMinimumNode(node.right).data
-            node.right = this.DeleteNode(node.right, node.data)
+    Delete(dataToDelete) {
+        // comments may be false
+        // they were my guidlines to the algorithm
+        // if root when change pointer of parent, change this.root 
+        // find node, find parent, find direction from parent
+        // find depth of right most node of left child + the parent + direction
+        // find depth of left most node of right child + the parent + direction
+        // comapare
+        // save child nodes of node
+        // save child node of highest depth node
+        // replace node with highest depth node
+        // - attach children of node to the replacement
+        // - attach children of replacement to the replacement parent
+        let isRoot = false
+        if (dataToDelete === this.root.data) {
+            isRoot = true
         }
-        return node
-    } 
-    FindMinimumNode(node) {
-        if (!node.left) return node
-        return this.FindMinimumNode(node.left)
+        // Node, Parent, Direction
+        const NodeStructure = this.ExploreNodeStructure(dataToDelete)
+
+        const NodeChildren = {
+            Left: NodeStructure.Node.left,
+            Right: NodeStructure.Node.right
+        }
+        // LowestNode, LowestNodeParent, LowestNodeChild, LowestNodeChildDirection, Depth
+        const LeftChildStructure = this.ExploreChildNodeDepth(NodeChildren.Left, "left")
+        const RightChildStructure = this.ExploreChildNodeDepth(NodeChildren.Right, "right")
+
+
+        let usingStructure = LeftChildStructure
+        if (RightChildStructure.Depth > LeftChildStructure.Depth) {
+            usingStructure = RightChildStructure
+        }
+        if (isRoot) {
+            this.root = usingStructure.LowestNode
+        } else {
+            NodeStructure.Parent[NodeStructure.Direction] = usingStructure.LowestNode
+        }
+        if (usingStructure.LowestNode && usingStructure.LowestNode !== NodeChildren.Left) {
+            usingStructure.LowestNode.left = NodeChildren.Left
+        }
+        if (usingStructure.LowestNode && usingStructure.LowestNode !== NodeChildren.Right) {
+            usingStructure.LowestNode.right = NodeChildren.Right
+        }
+
+        if (usingStructure.LowestNodeParent) {
+            usingStructure.LowestNodeParent[usingStructure.LowestNodeChildDirection] = usingStructure.LowestNodeChild
+        }
+    }
+    ExploreNodeStructure(data) {
+        let current = this.root
+        let parent = null
+        let direction = null
+        let found = false
+        while (current && !found) {
+            if (current.data > data) {
+                parent = current
+                direction = "left"
+                current = current.left
+            } else if (current.data < data) {
+                parent = current
+                direction = "right"
+                current = current.right
+            } else {
+                found = true
+            }
+        }
+        return {
+            Node: current,
+            Parent: parent,
+            Direction: direction
+        }
+    }
+    ExploreChildNodeDepth(startNode, directionFromParent) {
+        let otherSide = directionFromParent == "left" ? "right" : "left"
+        if (!startNode) {
+            return {
+                LowestNode: null,
+                LowestNodeParent: null,
+                LowestNodeChild: null,
+                LowestNodeChildDirection: otherSide,
+                Depth: 0,
+            }
+        }
+        let current = startNode
+        let parent = null
+        let depth = 0
+        while (current[otherSide]) {
+            parent = current
+            current = current[otherSide]
+            depth++
+        }
+        const lowestChild = current[directionFromParent]
+        if (lowestChild) {
+            depth++
+        }
+        return {
+            LowestNode: current,
+            LowestNodeParent: parent,
+            LowestNodeChild: lowestChild,
+            LowestNodeChildDirection: otherSide,
+            Depth: depth,
+        }
     }
     BreadthFirstSearch() {
         const queue = new Queue()
@@ -537,6 +616,11 @@ class Graph {
     }
 }
 
+//
+// End Of Algorithms
+//
+
+
 
 // NOT IN SPEC
 
@@ -595,7 +679,22 @@ function formatGraphPath([path, distance]) {
     console.log("Path: ", pathString.slice(0, -3))
     console.log("Total Distance:", distance)
 }
+function fib(num) {
+    if (num <= 1) {
+        return 1
+    }
+    return fib(num-1) + fib(num-2)
+}
+function fibA(num, mult = 1) {
+    if (num <= 1) {
+        return 1 * mult
+    }
+    return fibA(num-1, mult) + fibA(num-2, mult)
+}
+
+//
 // Testing
+//
 
 // Class - Graph
 function prepareGraph() {
@@ -651,4 +750,33 @@ function testGraph() {
     // expect Path : L < K < J < F < A
     // expect Distance : 15
     // expect Dijkstra to be consistent with A*
+}
+
+// Class - Binary Tree
+function prepareTree() {
+    const BT = new BinaryTree()
+    BT.Insert("lion")
+    BT.Insert("tiger")
+    BT.Insert("mouse")
+    BT.Insert("cat")
+    BT.Insert("dog")
+    BT.Insert("zebra")
+    BT.Insert("yak")
+    BT.Insert("owl")
+    BT.Insert("aardvark")
+    return BT
+}
+function testTree() {
+    const BT = prepareTree()
+    BT.BreadthFirstSearch()
+    BT.Delete("lion")
+    console.log("-".repeat("3"), "DELETED", "-".repeat("3"))
+    BT.BreadthFirstSearch()
+}
+
+// Other
+function testFib() {
+    const test = 5
+    const multi = 5
+    console.log(fib(test) * multi === fibA(test, multi))
 }
