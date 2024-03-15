@@ -619,8 +619,9 @@ class Graph {
 //
 // End Of Algorithms
 //
+const a = shuffle(generateNumberData(1000))
 
-
+console.log(intMSDRadixSort(a))
 
 // NOT IN SPEC
 
@@ -638,6 +639,7 @@ function shuffle(array, count = array.length) {
         const index2 = Math.floor(Math.random()*array.length);
         [array[index1], array[index2]] = [array[index2], array[index1]]
     }
+    return array
 }
 function testFunction(func, iterations=1000) {
     console.log(`Testing: ${func.name}`)
@@ -690,6 +692,49 @@ function fibA(num, mult = 1) {
         return 1 * mult
     }
     return fibA(num-1, mult) + fibA(num-2, mult)
+}
+function intMSDRadixSort(array) {
+    const strArray = array.map(x => x.toString())
+    let maxLength = 0
+    for (let item of strArray) {
+        if (item.length > maxLength) {
+            maxLength = item.length
+        }
+    }
+    const paddedStrArray = strArray.map(x => x.padStart(maxLength, "0"))
+    intMSDRadixSortSort(paddedStrArray, 0, maxLength)
+    return paddedStrArray
+}
+function intMSDRadixSortSort(array, digit, maxLength) {
+    const buckets = new Array(10).fill(null).map(x => new Array)
+    for (let item of array) {
+        buckets[item[digit]].push(item)
+    }
+    
+    for (let bucket of buckets) {
+        // if still divisible or reached the end of the string -> fail
+        if (bucket.length > 1 && digit < maxLength - 1) {
+            intMSDRadixSortSort(bucket, digit+1, maxLength)
+        }
+    }
+    // copy buckets.flat into array?
+
+    const temp = buckets.flat()
+    
+    for (let index = 0; index < array.length; index++) {
+        array[index] = temp[index]
+    }
+
+    /* 
+    put items into corresponding bucket using first digit
+    if bucket has more than 1 item:
+        make sub bucket
+        put items from bucket into corresponding sub bucket using second digit
+        if sub bucket has more than 1 item:
+        repeat
+
+    collapse entire bucket array into 1 array -> sorted
+    */
 }
 
 //
