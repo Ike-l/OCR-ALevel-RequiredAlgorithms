@@ -619,9 +619,14 @@ class Graph {
 //
 // End Of Algorithms
 //
-const a = shuffle(generateNumberData(1000))
-
-console.log(intMSDRadixSort(a))
+const array = shuffle(generateNumberData(1000))
+//const array = [54, 5, 10000, 0, 12, 54, 654, 095, 1050, 100]
+console.log("Unsorted Array:", array)
+const sortedArray = intMSDRadixSort(array)
+const intSortedArray = sortedArray.map(x => parseInt(x))
+console.log("MSD Sorted Array:", intSortedArray)
+quickSort(array)
+console.log(intSortedArray.join(",") === array.join(",") ? "Sorted Correctly!" : "Oh no...")
 
 // NOT IN SPEC
 
@@ -706,8 +711,11 @@ function intMSDRadixSort(array) {
     return paddedStrArray
 }
 function intMSDRadixSortSort(array, digit, maxLength) {
+    // 10 means possible values the array elements can take, in this case, integers 0-9 
+    // cant just fill with arrays since it gives the same array - a reference
     const buckets = new Array(10).fill(null).map(x => new Array)
     for (let item of array) {
+        // index using a map
         buckets[item[digit]].push(item)
     }
     
@@ -719,10 +727,10 @@ function intMSDRadixSortSort(array, digit, maxLength) {
     }
     // copy buckets.flat into array?
 
-    const temp = buckets.flat()
+    const flatBucket = buckets.flat()
     
-    for (let index = 0; index < array.length; index++) {
-        array[index] = temp[index]
+    for (let index in array) {
+        array[index] = flatBucket[index]
     }
 
     /* 
