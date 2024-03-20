@@ -1,10 +1,3 @@
-// Welcome, 
-// This contains all required algorithms for OCR spec as of February 2024
-// Made by Isaac Loffredo
-
-// Note:
-// "private" functions/variables in classes are camelCase
-
 // Searches
 
 // Iterates over an array from the start index to the last, returning the index when found
